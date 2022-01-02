@@ -1,0 +1,32 @@
+package TwasolExpert;
+
+public class GUIInputStringProcessing {
+
+	public static void stringToSetOfWords() {
+
+		int num = 0;
+		char qc[] = Control.iQS.qs.toCharArray();;
+		String storeWordIn = "";
+		
+		while(num < Control.iQS.qs.length()) { 
+							
+			if((int)qc[num] >= 1568 && (int)qc[num] <= 1594 || (int)qc[num] >= 1601 && (int)qc[num] <= 1610) {
+				
+				storeWordIn = storeWordIn + qc[num];
+				if(num + 1 == qc.length) {
+					
+					Control.iQS.updateWordsArray(storeWordIn);
+					storeWordIn = "";
+				}
+			}
+			else 
+				if(storeWordIn != "") {
+					
+					Control.iQS.updateWordsArray(storeWordIn);
+					storeWordIn = "";
+				}
+				
+			num++;
+		}
+	}
+}

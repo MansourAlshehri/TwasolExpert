@@ -1,0 +1,386 @@
+package TwasolExpert;
+
+import TwasolExpert.ReadWriteExcelFile;
+import java.io.IOException;
+
+public class Control {
+	
+	public static String controlStringBeforePreprocessing[][];
+	
+	final static int excelRows = 100;//3345;
+	final static int excelColumns = 8;
+	final static int questionCulomn = 4;
+	final static int answerCulomn = 6;
+	final static int allowedRanking = 150;
+	final static int questionAllowedSizeInGUI = 190;
+	final static int abilityNumberOfWordsOfInputQuestion = 3;
+	final static int possibleNumberOfMatching = 3;
+	
+	static StringStructure stringObjectQuestion[];
+	static StringStructure stringObjectAnswer[];
+	static DictionaryWordStructure dictionaryWord[];
+	
+	static String stopWords[] = {"شكرا", "سلام", "شكر", "رجاء", "حق", "الا", "الان", "التي", "الله", "اليكم", "جاي", "خير", "معينه", "مساعده", "اسف", "لكم", "لدينا"
+								, "رحمه", "لكن", "بركاته", "لله", "وش", "مع", "في", "من", "لي", "لو", "هي", "هل", "هو", "لا", "كي", "عن", "او", "ثم"
+								, "و", "لم", "كل", "ان", "كم", "ف", "بس", "اي", "ذي", "دي", "تم", "ما", "قد", "له", "بل", "لك", "كن", "ها", "سم"
+								, "عليكم", "انا", "اريد", "هذا", "ارجو", "علا", "منكم", "متا", "اتمنا", "ذلك", "اني", "لان", "اذا", "فقط", "ابي", "علما", "اقدر"
+								, "استطيع", "عندي", "انه", "لاني","ارجوا", "حيث", "سمحت","اخرا", "جزيل", "نود", "قامت", "اعرف", "نحن", "اود", "فيه", "ممكن"
+								, "نظر", "نفس", "كان", "اخذ", "فيها"};
+	
+	static String canNotApplayStemmingOnWord[] = {"الي", "المع", "الكتروني", "الا", "الان", "التي", "الله", "اليكم", "الكترونيا", "الكترونيه", "لكم", "لماذا", "لدينا", "وحده"
+			                                    , "وقت", "واحده", "وجدان", "والدي", "ورق", "والد", "ورشه", "ماده", "مادتين", "ماخذ", "ماخذه", "مادتي", "لغه", "لجنه"
+			                                    , "ليلا", "ليل", "لقيت", "لغات", "ليس", "ليست", "لغويه", "لينه", "لبس", "لديكم", "لديا", "لين", "لقيت", "وظع", "وجود"
+			                                    , "واحد", "وفقكم", "وقتي", "وظيفه", "وظاءف", "وراثه", "وساءل", "وصلت", "وظعي", "وجه", "ورقه", "وصف", "وفق"
+			                                    , "وصايف", "وافر", "وفاء", "وجبه", "وجبات", "ولد", "ولدت", "واظح", "واظحه", "وعد", "واجبات", "واجب", "ماذا"
+			                                    , "مايكرو", "ماذا", "مادته", "مال", "ماستر", "ماديه", "برمجه", "بنات", "باقي", "بطاقه", "بطاقتي", "بيانات", "بياناتي", "بدايات"
+			                                    , "برامج", "بدايه", "بلاغه", "بحث", "بناء", "بارق", "بركاته", "بغيت", "بدل", "بعظ", "بحوث", "بصريه", "برايل"
+			                                    , "بدال", "بيشه", "بعد", "بين", "بارك", "بغيت", "بعيد", "باعاشه", "بهران", "بدلا", "بسام", "بشر", "بارك", "بركاته"
+			                                    , "بقي", "بريكات", "بكالوريوس", "بيت", "بشت", "بديل", "باب", "برا", "بسيط", "وماده", "وماذا", "وماخذ", "ولازال", "ولكن"
+			                                    , "ولازم", "ولابد", "ولاضافه", "لوقتها", "لوجود", "لوحدي", "ولاضافه", "لولا", "اول", "اوقات", "اود", "اوصل", "اولاد"
+			                                    , "اوسع", "اوراق", "اوافق", "اولا", "اوس", "اوجد", "اوشك", "قدمت", "قديم", "قدره", "قدرتي", "قدرات", "ارجو"
+			                                    , "نرجو", "نحو", "تحلو", "عظو", "فتح", "فقط", "فرع", "فاظي", "فوزي", "فيزياء", "فصل", "فظل", "فقه", "فيه"
+			                                    , "فتره", "فرصه", "فرص", "فاطمه", "فاقد", "فاتحه", "فراءظ", "فراغ", "فوق", "فيز", "فارغ", "فصلو", "فلوس", "فعل"
+			                                    , "فات", "فيصل", "فسيح", "ياتي", "مستوا", "ارجوا", "شكوا", "جدوا", "دوا", "اروا", "سوا", "عليكم", "منكم", "حكم"
+			                                    , "اوقات", "معكم", "اصطناعي", "سعودي", "مطيري", "جامعي", "عسكري", "فيها", "طي", "طب", "سبب", "عدد", "مقرر"
+			                                    , "مقررات", "مقررين", "تخصص", "سبب", "تغيير", "محدد", "ممكن", "مقرري", "متعدد", "متعدده", "يسبب", "اظطررت", "متتابعه"
+			                                    , "يمكنني", "تتعارظ", "نوويه", "مقرراته", "عددي", "تقييم", "اسس", "سدد", "عبدالله", "حصص", "خلل", "تتاح", "بسبب", "مما"
+			                                    , "تتقدم", "مشبب", "تشييد", "ضرره", "تتوافق", "سببها", "تتعدلي"};
+	
+	static String rootDictionary[];
+	static int frequencyArray[];
+	static int rootNumber = 0;
+	static int indexArrayForRemovingRepetation[];
+	
+	//Input question from GUI
+	static InputQuestionStructure iQS = new InputQuestionStructure();
+	static int biggerWeight = 0;
+	static int counterNumberOfMatchedQuestionWithBiggerWeight = 0;
+	
+	public static void main(String[] args) throws IOException {
+
+		ReadWriteExcelFile.readXLSFile();
+		controlStringBeforePreprocessing  = ReadWriteExcelFile.s;
+		ReadWriteExcelFile.s = null;
+		
+		CellStringDecomposition.assigningQuestionStringOfQuestionsAndAnswersToControlObjectStrings();
+		CellStringDecomposition.stringToSetOfWords(); 
+      
+        PreprocessingMethods.unifying();
+        PreprocessingMethods.postPrefixLettersRemoval();
+        PreprocessingMethods.checkRepetationFromTheWords();
+        PreprocessingMethods.stopWordRemoval();
+        PreprocessingMethods.cleanEmptyWordsFromQuestionWordsArray();
+
+        TF.addTheWordsToTheDictionary();
+        TF.rankingDictionaryWordsFrequency();
+        TF.ignoreGreaterOfAllowedRankingOfWordsFromTheDictionary();
+//      TF.printTFResults();
+        
+        new IntroducePanel();      
+	}
+}
+
+class StringStructure{
+	
+	String cellString = null;
+	String words[] = null;
+	
+    void updateWordsArray(String s) {
+		
+    	String storeArray[] = null;
+		int num = 0;
+		
+		if(words != null) {
+			
+			storeArray = new String[words.length + 1];
+			num = 0;
+			
+			while(num < (words.length)) {
+				
+				storeArray[num] = words[num];
+				
+				if((num+1) == (words.length)) {
+					
+					storeArray[words.length] = s;
+					words = storeArray;
+					storeArray = null;
+					break;
+				}
+				
+				num++;
+			}
+		}else {
+			
+			words = new String[1];
+			words[0] = s;
+		}
+	}
+}
+
+class Dictionary{
+	
+	static DictionaryWordStructure storeArray[] = null;
+	static int globalNum = 0;
+	
+	public static void updateDictionaryWord(String s) {
+		
+		if(Control.dictionaryWord != null) {
+		
+			if(isExist(s)) {
+				
+				Control.dictionaryWord[globalNum].frequency++;
+			
+			}else{
+				
+				storeArray = new DictionaryWordStructure[Control.dictionaryWord.length + 1];
+				int num = 0;
+				
+				while(num < storeArray.length) {
+					
+					if(num + 1 == storeArray.length) {
+						
+						storeArray[num] = new DictionaryWordStructure();
+						storeArray[num].word = s;
+						storeArray[num].frequency++; 
+						break;
+					}
+					
+					storeArray[num] = Control.dictionaryWord[num];
+					num++;
+				}
+				
+				Control.dictionaryWord = storeArray;
+				storeArray = null;
+				
+			}
+			
+		}else {
+
+			Control.dictionaryWord = new DictionaryWordStructure[1];
+			Control.dictionaryWord[0] = new DictionaryWordStructure();
+			Control.dictionaryWord[0].word = s;
+			Control.dictionaryWord[0].frequency++;
+		}
+	}
+	
+	public static boolean isExist(String s) {
+		
+		int num = 0;
+		
+		if(Control.dictionaryWord != null) {
+
+			while(num < Control.dictionaryWord.length) {
+				
+				if(Control.dictionaryWord[num].word.equals(s)) {
+					
+					globalNum = num;
+					return true;
+				}
+				
+				num++;
+			}
+		}
+			
+		return false;
+	}
+	
+}
+
+
+class DictionaryWordStructure {
+	
+	String word = "";
+	int frequency = 0;
+	int ranking = 0;
+	boolean isRanked = false;
+	boolean isImportantWord = true;
+}
+
+class InputQuestionStructure {
+	
+	String qs = null;
+	String words[] = null;
+	MatchedQuestions allMatchedQuestionByAllWeights[] = null;
+	MatchedQuestions possibleMatchedQuestionByPossibleNumberOfMatching[] = null;
+	String candidateAnswer[];
+	    
+	void updateWordsArray(String s) {
+		
+    	String storeArray[] = null;
+		int num = 0;
+		
+		if(s != null)
+			if(words != null) {
+				
+				num = 0;
+				storeArray = new String[words.length + 1];
+				
+				while(num < storeArray.length) {
+					
+					if( (num + 1) == storeArray.length) {
+						
+						storeArray[num] = s;
+						words = storeArray;
+						storeArray = null;
+						break;
+					}
+
+					storeArray[num] = words[num];
+					num++;
+				}
+				
+			}else {
+				
+				words = new String[1];
+				words[0] = s;
+			}
+	}
+	
+	 void updateAllMatchedQuestionsArrayByAllWeights(int n, String s) {
+		 
+		 int num = 0;
+		 
+		 if(isQuestionNumInserted(n)) {
+				
+				while(num < allMatchedQuestionByAllWeights.length) {
+					
+					if(allMatchedQuestionByAllWeights[num].numberOfQuestion == n) {
+						
+						allMatchedQuestionByAllWeights[num].updateMatchedWordsArray(s);
+						allMatchedQuestionByAllWeights[num].matchingWeight++;
+						break;
+					}
+					
+					num++;
+				}
+			}
+			
+			else {
+				
+				 MatchedQuestions storeMatchedQuestionIn[] = null;
+				
+				 if(allMatchedQuestionByAllWeights != null) {
+					 
+					 storeMatchedQuestionIn = new MatchedQuestions[allMatchedQuestionByAllWeights.length + 1];
+					 
+					 while(num < storeMatchedQuestionIn.length) {
+						 
+						 if(num + 1 == storeMatchedQuestionIn.length) {
+							 
+							 storeMatchedQuestionIn[num] = new MatchedQuestions();
+							 storeMatchedQuestionIn[num].numberOfQuestion = n;
+							 storeMatchedQuestionIn[num].updateMatchedWordsArray(s);
+							 storeMatchedQuestionIn[num].matchingWeight++;
+							 break;
+						 }
+						 
+						 storeMatchedQuestionIn[num] = allMatchedQuestionByAllWeights[num];
+						 num++;
+					 }
+					 
+					 allMatchedQuestionByAllWeights = storeMatchedQuestionIn;
+					 
+				 }else {
+					 
+					 allMatchedQuestionByAllWeights = new MatchedQuestions[1];
+					 allMatchedQuestionByAllWeights[0] = new MatchedQuestions();
+					 allMatchedQuestionByAllWeights[0].numberOfQuestion = n;
+					 allMatchedQuestionByAllWeights[0].updateMatchedWordsArray(s);
+					 allMatchedQuestionByAllWeights[0].matchingWeight++;
+				 }
+			}
+	 }
+	 
+	 void emptyTheArrayOfWordsOfInputQuestionAndMatchedArray() {
+	    	
+		 qs = null;
+		 words = null;
+	     allMatchedQuestionByAllWeights = null;
+	     possibleMatchedQuestionByPossibleNumberOfMatching = null;
+	     candidateAnswer = null;
+	 }
+	 
+	 boolean isWordsArrayAbleForProcessing() {
+	    	
+	    	if(words != null)
+	    		if(words.length >= Control.abilityNumberOfWordsOfInputQuestion)
+		    		return true;
+	    	
+	    	return false;
+	 }  
+	 
+	 boolean isQuestionNumInserted(int n) {
+		 
+		 int num = 0;
+		 if(allMatchedQuestionByAllWeights != null) {
+			 
+			 while(num < allMatchedQuestionByAllWeights.length) {
+				 
+				 if(allMatchedQuestionByAllWeights[num].numberOfQuestion == n)
+					 return true;
+				 
+				 num++;
+			 }
+		 }
+			 
+		 return false;
+	 }
+}
+
+class MatchedQuestions {
+	
+	int numberOfQuestion;
+	String matchedWords[] = null;
+	int matchingWeight = 0;
+	
+	void updateMatchedWordsArray(String s) { 
+		
+//		if(!isWordStoredInTheArrayOfWords(s)) {
+			
+			int num = 0;
+			String StoreMatchedWordsIn[] = null;
+			 
+			 if(matchedWords != null) {
+				 
+				 StoreMatchedWordsIn = new String[matchedWords.length + 1];
+				 
+				 while(num < StoreMatchedWordsIn.length) {
+					 
+					 if(num + 1 == StoreMatchedWordsIn.length) {
+						 
+						 StoreMatchedWordsIn[num] = s;
+						 break;
+					 }
+					 
+					 StoreMatchedWordsIn[num] = matchedWords[num];
+					 num++;
+				 }
+				 
+				 matchedWords = StoreMatchedWordsIn;
+				 
+			 }else {
+				 
+				 matchedWords = new String[1];
+				 matchedWords[0] = s;
+			 }
+//		}
+	}
+	
+	boolean isWordStoredInTheArrayOfWords(String s) { // Prevents the repetition in matched array, I can ignore it if Abdolmuhsen wants change the weight with it
+		
+		if(matchedWords != null) {
+			
+			int num = 0;
+			
+			while(num < matchedWords.length) {
+				
+				if(matchedWords[num].equals(s))
+					return true;
+				
+				num++;
+			}
+		}
+		
+		return false;
+	}
+}

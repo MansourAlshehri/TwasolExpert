@@ -1,0 +1,125 @@
+package TwasolExpert;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+public class ReadWriteExcelFile {
+	
+	public static String s[][] = new String[Control.excelRows][Control.excelColumns];
+
+	public static void readXLSFile() throws IOException
+	{
+		int lineNumber = 0;
+		int cellNumber = 0;
+		
+		InputStream ExcelFileToRead = new FileInputStream(new File("D:\\TawasolProjectExcelFiles\\طلبات التواصل المنتهية على الفصل XLS381.xls"));
+		
+		HSSFWorkbook wb = new HSSFWorkbook(ExcelFileToRead);
+
+		HSSFSheet sheet = wb.getSheetAt(0);
+		HSSFRow row; 
+		HSSFCell cell;
+
+		Iterator rows = sheet.rowIterator();
+
+		while (rows.hasNext())
+		{
+			//System.out.println("$" + (lineNumber + 1) + "$");
+			row=(HSSFRow) rows.next();
+			Iterator cells = row.cellIterator();
+			
+			while (cells.hasNext() && (cellNumber < 8))
+			{
+				cell = (HSSFCell) cells.next();
+				s[lineNumber][cellNumber] = cell.toString();
+		
+				if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+				{
+					//System.out.print(cell.ENCODING_UTF_16); prints 1 after each cell
+					//System.out.print(cell.getStringCellValue() + " ");
+				}
+				else if(cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+				{
+					//System.out.print((int)cell.getNumericCellValue()+ " ");
+				}
+				else
+				{
+					//U Can Handel Boolean, Formula, Errors
+				}
+
+				cellNumber++;
+			}
+			
+			cellNumber = 0;
+			lineNumber++;
+			if(lineNumber == Control.excelRows) // Allow monitoring excel file lines, stop the while but not appear
+				break;
+			}
+	}
+	
+	public static void writeXLSFile() throws IOException {
+		
+		String excelFileName = "D:\\TawasolProjectExcelFiles\\BB1 - fullLineXLS - ToWriteIn.xls";//name of excel file
+
+		String sheetName = "Sheet1";//name of sheet
+
+		HSSFWorkbook wb = new HSSFWorkbook();
+		HSSFSheet sheet = wb.createSheet(sheetName) ;
+
+		//iterating r number of rows
+		for (int r = 0; r < (Control.excelRows + 1); r++) // + 1 for new question and answer
+		{
+			HSSFRow row = sheet.createRow(r);
+	
+			//iterating c number of columns
+			for (int c = 0; c < 3; c++ )
+			{
+				HSSFCell cell = row.createCell(c);
+				
+				if(r + 1 == (Control.excelRows + 1)) {
+					
+					if(c == 0)
+						cell.setCellValue(r);
+					if(c == 1)
+						cell.setCellValue(Control.iQS.qs + " ");
+					if(c == 2)
+						cell.setCellValue(Control.iQS.candidateAnswer[0]); // What about others
+						
+				}else if(r == 0) {
+					
+					if(c == 0)
+						cell.setCellValue("Question Number");
+					if(c == 1)
+						cell.setCellValue("The Question");
+					if(c == 2)
+						cell.setCellValue("Candidated Answer");
+				
+				}else {
+					
+					if(c == 0)
+						cell.setCellValue(r);
+					if(c == 1)
+						cell.setCellValue(Control.stringObjectQuestion[r].cellString + " ");
+					if(c == 2)
+						cell.setCellValue(Control.stringObjectAnswer[r].cellString + " ");
+				}
+			}
+		}
+		
+		FileOutputStream fileOut = new FileOutputStream(excelFileName);
+		
+		//write this workbook to an Outputstream.
+		wb.write(fileOut);
+		fileOut.flush();
+		fileOut.close();
+	}
+}

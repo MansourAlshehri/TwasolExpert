@@ -1,0 +1,191 @@
+package TwasolExpert;
+
+public class AnswerFinding {
+	
+	public static void questionMatching() {
+		
+		int num = 0;
+		int innerNum = 0;
+		int guiWordsNum = 0;
+		
+		while(guiWordsNum < Control.iQS.words.length) {
+			
+			while(num < Control.excelRows) {
+				
+				if(Control.stringObjectQuestion[num].words != null)
+					while(innerNum < Control.stringObjectQuestion[num].words.length) {
+						
+						if(Control.iQS.words[guiWordsNum].equals(Control.stringObjectQuestion[num].words[innerNum]))
+							Control.iQS.updateAllMatchedQuestionsArrayByAllWeights(num, Control.stringObjectQuestion[num].words[innerNum]);
+						//For input question not to the data set.
+						innerNum++;
+					}
+				
+				innerNum = 0;
+				num++;
+			}
+			
+			num = 0;
+			guiWordsNum++;
+		}
+	}
+	
+	public static void createPossibleArrayOfMatchedQuestionByPossibleWeights() {
+		
+		int num = 0;
+		int counter = 0;
+		
+		while(num < Control.iQS.allMatchedQuestionByAllWeights.length) {
+			
+			if(Control.iQS.allMatchedQuestionByAllWeights[num].matchingWeight >= Control.possibleNumberOfMatching)
+				counter++;
+			
+			num++;
+		}
+		
+		num = 0;
+		int insertionCounter = 0;
+		
+		Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching = new MatchedQuestions[counter];
+		
+		while(num < Control.iQS.allMatchedQuestionByAllWeights.length) {
+			
+			if(Control.iQS.allMatchedQuestionByAllWeights[num].matchingWeight >= Control.possibleNumberOfMatching)
+				Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[insertionCounter++] = Control.iQS.allMatchedQuestionByAllWeights[num];
+			
+			num++;
+		}
+	}
+	
+	public static void findBetterMatchedQuestionWeight() { // Create new matrix in GUI input for possible matched array, rename this method, update candidate Answers array of GUI input then find its better, or print all possible answers with its questions
+		
+		int num = 0;
+		int biggerWeight = 0;
+		int counterNumberOfMatchedQuestionWithBiggerWeight = 0;
+		
+		while(num < Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching.length) {
+			
+			if(Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].matchingWeight > biggerWeight)
+				biggerWeight = Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].matchingWeight;
+			
+			num++;
+		}
+		
+		Control.biggerWeight = biggerWeight;
+		System.out.println("BiggerWeight : " + biggerWeight);
+		
+		num = 0;
+		
+		while(num < Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching.length) {
+			
+			if(Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].matchingWeight == biggerWeight)
+				counterNumberOfMatchedQuestionWithBiggerWeight++;
+			
+			num++;
+		}
+		
+		Control.counterNumberOfMatchedQuestionWithBiggerWeight = counterNumberOfMatchedQuestionWithBiggerWeight;
+		System.out.println("CounterNumberOfMatchedQuestionWithBiggerWeight : " + counterNumberOfMatchedQuestionWithBiggerWeight);
+	}
+	
+	public static void buildCandidateAnswerArray() {
+		
+		int num = 0;
+		Control.iQS.candidateAnswer = new String[Control.counterNumberOfMatchedQuestionWithBiggerWeight];
+		int answerStringCounter = 0;
+		
+		while(num < Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching.length) {
+			
+			if(Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].matchingWeight == Control.biggerWeight)
+				Control.iQS.candidateAnswer[answerStringCounter++] = Control.stringObjectAnswer[Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].numberOfQuestion].cellString;
+			
+			num++;
+		}
+	}
+	
+	public static void printAllMatchedQuestionResults() {
+		
+		int num = 0;
+		int datasetQuestionWords = 0;
+		int matchedQuestionWords = 0;
+		
+		while(num < Control.iQS.allMatchedQuestionByAllWeights.length) {
+			
+			System.out.println("The question number : " + Control.iQS.allMatchedQuestionByAllWeights[num].numberOfQuestion + ", The Weight : " + Control.iQS.allMatchedQuestionByAllWeights[num].matchingWeight);
+			
+			if(Control.stringObjectQuestion[Control.iQS.allMatchedQuestionByAllWeights[num].numberOfQuestion].words != null) {
+				
+				System.out.print("The Question words : ");
+				while(datasetQuestionWords < Control.stringObjectQuestion[Control.iQS.allMatchedQuestionByAllWeights[num].numberOfQuestion].words.length) {
+					
+					System.out.print(Control.stringObjectQuestion[Control.iQS.allMatchedQuestionByAllWeights[num].numberOfQuestion].words[datasetQuestionWords] + ", ");
+					datasetQuestionWords++;
+				}
+				
+				System.out.println();
+			}
+
+			System.out.print("The Matched Words : ");
+			while(matchedQuestionWords < Control.iQS.allMatchedQuestionByAllWeights[num].matchedWords.length) {
+				
+				System.out.print(Control.iQS.allMatchedQuestionByAllWeights[num].matchedWords[matchedQuestionWords] + ", ");
+				matchedQuestionWords++;
+			}
+			
+			System.out.println();
+			datasetQuestionWords = 0;
+			matchedQuestionWords = 0;
+			num++;
+		}
+	}
+	
+	public static void printAllMatchedQuestionResultsByPossibleNumberOfGivenNumberOfMatchWordsAndAnswers() {
+		
+		int num = 0;
+		int datasetQuestionWords = 0;
+		int matchedQuestionWords = 0;
+		
+		System.out.println("************************************************************************************************");
+		
+		while(num < Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching.length) {
+			
+			System.out.println("The question number : " + Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].numberOfQuestion + ", The Weight : " + Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].matchingWeight);
+			
+			if(Control.stringObjectQuestion[Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].numberOfQuestion].words != null) {
+				
+				System.out.print("The Question words : ");
+				while(datasetQuestionWords < Control.stringObjectQuestion[Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].numberOfQuestion].words.length) {
+					
+					System.out.print(Control.stringObjectQuestion[Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].numberOfQuestion].words[datasetQuestionWords] + ", ");
+					datasetQuestionWords++;
+				}
+				
+				System.out.println();
+			}
+
+			System.out.print("The Matched Words : ");
+			while(matchedQuestionWords < Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].matchedWords.length) {
+				
+				System.out.print(Control.iQS.possibleMatchedQuestionByPossibleNumberOfMatching[num].matchedWords[matchedQuestionWords] + ", ");
+				matchedQuestionWords++;
+			}
+			
+			System.out.println();
+			datasetQuestionWords = 0;
+			matchedQuestionWords = 0;
+			num++;
+		}
+	}
+	
+	public static void printCandidatedAnswers() {
+		
+		int num = 0;
+		
+		System.out.println("The possible answers are : ");
+		while(num < Control.iQS.candidateAnswer.length) {
+			
+			System.out.println((num + 1) + ". " + Control.iQS.candidateAnswer[num]);
+			num++;
+		}
+	}
+}

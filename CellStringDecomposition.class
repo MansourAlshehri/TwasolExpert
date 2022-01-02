@@ -1,0 +1,76 @@
+package TwasolExpert;
+
+import TwasolExpert.Control;
+
+public class CellStringDecomposition {
+	
+	public static void assigningQuestionStringOfQuestionsAndAnswersToControlObjectStrings() {
+		
+		int num = 0;
+		
+		Control.stringObjectQuestion = new StringStructure[Control.excelRows];
+		Control.stringObjectAnswer = new StringStructure[Control.excelRows];
+		
+		 //Assigning the String to Question  and Answers Objects
+		while( num < Control.excelRows) { 
+			
+			Control.stringObjectQuestion[num] = new StringStructure();
+			Control.stringObjectAnswer[num] = new StringStructure();
+			num++;	
+		}
+		
+		num = 0;
+
+		while( num < Control.excelRows) {
+			
+			Control.stringObjectQuestion[num].cellString = Control.controlStringBeforePreprocessing[num][Control.questionCulomn];
+			Control.stringObjectAnswer[num].cellString = Control.controlStringBeforePreprocessing[num][Control.answerCulomn];
+			num++;
+		}
+		
+	}
+	
+	public static void stringToSetOfWords() {
+
+		int num = 0;
+		int innerNum = 0;
+		
+		char qc[], ac[];
+		String storeWordIn = "";
+		
+		while(num < Control.excelRows) { 
+			
+			if(Control.stringObjectQuestion[num].cellString != "" && Control.stringObjectQuestion[num] != null) {
+				
+				qc = Control.stringObjectQuestion[num].cellString.toCharArray();
+				ac = Control.stringObjectAnswer[num].cellString.toCharArray();
+				
+				while(innerNum < qc.length) {
+					
+					// Ignore non_Arabic letters and numbers and special symbols
+					if((int)qc[innerNum] >= 1568 && (int)qc[innerNum] <= 1594 || (int)qc[innerNum] >= 1601 && (int)qc[innerNum] <= 1610) {
+						
+						storeWordIn = storeWordIn + qc[innerNum];
+						if(innerNum + 1 == qc.length) {
+							
+							Control.stringObjectQuestion[num].updateWordsArray(storeWordIn);
+							storeWordIn = "";
+						}
+					}
+					else 
+						if(storeWordIn != "") {
+							
+							Control.stringObjectQuestion[num].updateWordsArray(storeWordIn);
+							storeWordIn = "";
+						}
+
+					innerNum++;
+				}
+			}
+			
+			innerNum = 0;
+			num++;
+		}
+
+	}
+}

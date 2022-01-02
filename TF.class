@@ -1,0 +1,202 @@
+package TwasolExpert;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class TF {
+	
+	public static void addTheWordsToTheDictionary() {
+		
+		int num = 0;
+		int innerNum = 0;
+		
+		while(num < Control.excelRows) {
+			
+//			System.out.println(num);
+			if(Control.stringObjectQuestion[num].words != null) {
+				
+				while(innerNum < Control.stringObjectQuestion[num].words.length) {
+					
+					Dictionary.updateDictionaryWord(Control.stringObjectQuestion[num].words[innerNum]);
+					innerNum++;
+				}
+			}
+			
+			innerNum = 0;
+			num++;
+		}
+	}
+	
+	public static void rankingDictionaryWordsFrequency() {
+		
+		int num = 0;
+		int innerNum = 0;
+		int rankingCounter = 0;
+		DictionaryWordStructure dws;
+		 
+		while(num < Control.dictionaryWord.length) {
+			
+			dws = Control.dictionaryWord[num];
+			while(innerNum < Control.dictionaryWord.length) {
+
+				if(Control.dictionaryWord[innerNum].frequency > dws.frequency && Control.dictionaryWord[innerNum].isRanked == false)
+					dws = Control.dictionaryWord[innerNum];
+					
+				innerNum++;
+			}
+		
+			if(dws.isRanked == false) {
+				
+				if(!isFrequencyValueUsed(dws.frequency)) {
+					
+					dws.ranking = ++rankingCounter;
+					dws.isRanked = true;
+					insertFrequencyValueToArray(dws.frequency);
+				}else 
+					rankAsMatchedFrequency(dws);
+			}
+			
+			innerNum = 0;
+			num++;
+		}
+		
+		num = 0;
+		innerNum = 0;
+		
+		while(num < Control.dictionaryWord.length) {
+			
+			while(innerNum < Control.dictionaryWord.length) {
+
+				if(Control.dictionaryWord[innerNum].isRanked == false) 
+					rankingUnvisitedWords(Control.dictionaryWord[innerNum]);
+					
+				innerNum++;
+			}
+		
+			innerNum = 0;
+			num++;
+		}
+		
+	}
+	
+	public static void rankingUnvisitedWords(DictionaryWordStructure dws) {
+		
+		int num = 0;
+		
+		while(num < Control.dictionaryWord.length) {
+			
+			if(dws.frequency == Control.dictionaryWord[num].frequency && Control.dictionaryWord[num].isRanked == true) {
+				
+				dws.ranking = Control.dictionaryWord[num].ranking;
+				dws.isRanked = true;
+			}
+			
+			num++;
+		}
+	}
+	
+	public static void rankAsMatchedFrequency(DictionaryWordStructure dws) {
+		
+		int num = 0;
+		
+		while(num < Control.dictionaryWord.length) {
+			
+			if(dws.frequency == Control.dictionaryWord[num].frequency && Control.dictionaryWord[num].isRanked == true) {
+				
+				dws.ranking = Control.dictionaryWord[num].ranking;
+				dws.isRanked = true;
+				break;
+			}
+			num++;
+		}
+	}
+	
+	public static void insertFrequencyValueToArray(int f) {
+		
+		int storeInArray[];
+		
+		if(Control.frequencyArray != null) {
+			
+			int num = 0;
+			storeInArray = new int[Control.frequencyArray.length + 1];
+			
+			while(num < storeInArray.length) {
+				
+				if(num + 1 == storeInArray.length) {
+					
+					storeInArray[num] = f;
+					break;
+				}
+				
+				storeInArray[num] = Control.frequencyArray[num];
+				num++;
+			}
+			
+			Control.frequencyArray = storeInArray;
+			
+		}else{
+			
+			Control.frequencyArray = new int[1];
+			Control.frequencyArray[0] = f;
+		}
+	}
+	
+	public static boolean isFrequencyValueUsed(int f) {
+		
+		int num = 0;
+		
+		if(Control.frequencyArray != null) {
+			
+			while(num < Control.frequencyArray.length) {
+				
+				if(Control.frequencyArray[num] == f)
+					return true;
+				num++;
+			}
+		}
+		return false;
+	}
+
+	public static void ignoreGreaterOfAllowedRankingOfWordsFromTheDictionary() { // Control isImportant attribute 
+		
+		int num = 0;
+		
+		while(num < Control.dictionaryWord.length) {
+			
+			if(Control.dictionaryWord[num].ranking <= Control.allowedRanking)
+				Control.rootNumber++;
+			
+			else
+				Control.dictionaryWord[num].isImportantWord = false;
+			
+			num++;
+		}
+	}
+	
+	public static void printTFResults() {
+		
+		int num = 0;
+		int innerNum = 0;
+		int counter = 1;
+		
+		while(num < Control.dictionaryWord.length) {
+			
+			while(innerNum < Control.dictionaryWord.length) {
+				
+				if(Control.dictionaryWord[innerNum].ranking == counter)
+					System.out.println(" The Word : " + Control.dictionaryWord[innerNum].word + " , Frequency : " + Control.dictionaryWord[innerNum].frequency + " , Ranking as : " + Control.dictionaryWord[innerNum].ranking + " , Is Important : " + Control.dictionaryWord[innerNum].isImportantWord);
+					
+				if(innerNum + 1 == Control.dictionaryWord.length)
+					counter++;
+				
+				innerNum++;
+			}
+			
+			innerNum = 0;
+			num++;
+		}
+	}
+}

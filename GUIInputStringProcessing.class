@@ -29,4 +29,721 @@ public class GUIInputStringProcessing {
 			num++;
 		}
 	}
+
+//Pre-processing	
+	
+	public static void unifying() { 
+
+		int num = 0;
+		int innerNum = 0;
+		char c[];
+		String storeWordIn = "";
+		
+		while(num < Control.iQS.words.length) {
+			
+			c = Control.iQS.words[num].toCharArray();
+			
+			while(innerNum < c.length) {
+				
+				if(c[innerNum] == 'أ' || c[innerNum] == 'آ' || c[innerNum] == 'إ' || c[innerNum] == 'ى')
+					c[innerNum] = 'ا';
+						
+				else if(c[innerNum] == 'ؤ' || c[innerNum] == 'ئ') 
+					c[innerNum] = 'ء'; 
+						
+				else if(c[innerNum] == 'ة')                     
+				   c[innerNum] = 'ه'; 
+				
+				else if(c[innerNum] == 'ض')                     
+					   c[innerNum] = 'ظ'; 
+				
+				storeWordIn = storeWordIn + String.valueOf(c[innerNum]);
+				innerNum++;
+			}
+			
+			Control.iQS.words[num] = storeWordIn;
+			storeWordIn = "";
+			innerNum = 0;
+			num++;
+		}
+	}
+
+	public static void postPrefixLettersRemoval() {
+		
+		int num = 0;
+		int innerNum = 0;
+		char c[];
+		
+		while(num < Control.iQS.words.length) { // Removing  prefixed letters only
+			
+			c = Control.iQS.words[num].toCharArray();
+			
+			if(c.length >= 3) { 
+			
+				if(canNotApplyPrefixAndPostfixOnTheWords(Control.iQS.words[num]));//System.out.println(Control.iQS.words[num]);
+				
+				else {
+
+					innerNum = 0;
+					
+					while(innerNum < c.length) { 
+						
+						if(c[innerNum] == 'ا')  // حذف ال التعريف
+							if(innerNum == 0)
+								if(innerNum + 1 < c.length) 
+									if(c[innerNum + 1] == 'ل') {
+										
+//										System.out.println(Control.iQS.words[num]);
+										c[innerNum] = c[innerNum + 1] = ' ';
+										
+										int wordLetterCount = 0;
+										String storeWordIn = "";
+										
+										while(wordLetterCount < c.length) {
+											
+											if(c[wordLetterCount] != ' ')
+												storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+											
+											wordLetterCount++;
+										}
+										
+										Control.iQS.words[num] = storeWordIn;
+//										System.out.println(Control.iQS.words[num]);
+										break;
+									}
+						
+						if(c[innerNum] == 'ل') // حذف لو 
+							if(innerNum == 0)
+								if(innerNum + 1 < c.length) 
+									if(c[innerNum + 1] == 'و') {
+										
+//										System.out.println(Control.iQS.words[num]);
+										c[innerNum] = c[innerNum + 1] = ' ';
+										
+										int wordLetterCount = 0;
+										String storeWordIn = "";
+										
+										while(wordLetterCount < c.length) {
+											
+											if(c[wordLetterCount] != ' ')
+												storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+											
+											wordLetterCount++;
+										}
+										
+										Control.iQS.words[num] = storeWordIn;
+//										System.out.println(Control.iQS.words[num]);
+										break;
+									}
+						
+									}
+						
+						if(c[innerNum] == 'ل') // حذف لل 
+							if(innerNum == 0)
+								if(innerNum + 1 < c.length) 
+									if(c[innerNum + 1] == 'ل') {
+										
+//										System.out.println(Control.iQS.words[num]);
+										c[innerNum] = c[innerNum + 1] = ' ';
+										
+										int wordLetterCount = 0;
+										String storeWordIn = "";
+										
+										while(wordLetterCount < c.length) {
+											
+											if(c[wordLetterCount] != ' ')
+												storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+											
+											wordLetterCount++;
+										}
+										
+										Control.iQS.words[num] = storeWordIn;
+//										System.out.println(Control.iQS.words[num]);
+										break;
+									}
+						
+						if(c[innerNum] == 'ل')  // لحف حرف الجر ل وليس لو او لا
+							if(innerNum == 0) 
+								if(innerNum + 1 < c.length) 
+									if(c[innerNum + 1] != 'ا' && c[innerNum + 1] != 'و') {
+								
+										//System.out.println(Control.iQS.words[num]);
+										c[innerNum] = ' ';
+										
+										int wordLetterCount = 0;
+										String storeWordIn = "";
+										
+										while(wordLetterCount < c.length) {
+											
+											if(c[wordLetterCount] != ' ')
+												storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+											
+											wordLetterCount++;
+										}
+										
+										Control.iQS.words[num] = storeWordIn;
+//										System.out.println(Control.iQS.words[num]);
+										break;		
+									}
+						
+						if(c[innerNum] == 'ف' || c[innerNum] == 'ك' || c[innerNum] == 'ب' || c[innerNum] == 'و') // حذف وال , بال, كال, فال من بدايه الكلمات 
+							if(innerNum == 0)
+								if(innerNum + 1 < c.length) 
+									if(c[innerNum + 1] == 'ا') 
+										if(innerNum + 2 < c.length) 
+											if(c[innerNum + 2] == 'ل') {
+												
+												//System.out.println(Control.iQS.words[num]);
+												c[innerNum] = c[innerNum + 1] = c[innerNum + 2] = ' ';
+												
+												int wordLetterCount = 0;
+												String storeWordIn = "";
+												
+												while(wordLetterCount < c.length) {
+													
+													if(c[wordLetterCount] != ' ')
+														storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+													
+													wordLetterCount++;
+												}
+												
+												Control.iQS.words[num] = storeWordIn;
+//												System.out.println(Control.iQS.words[num]);
+												break;
+											}
+						
+						if(c[innerNum] == 'و') //  حذف وما من بدايه الكلمات 
+							if(innerNum == 0)
+								if(innerNum + 1 < c.length) 
+									if(c[innerNum + 1] == 'م') 
+										if(innerNum + 2 < c.length) 
+											if(c[innerNum + 2] == 'ا') {
+												
+												//System.out.println(Control.iQS.words[num]);
+												c[innerNum] = c[innerNum + 1] = c[innerNum + 2] = ' ';
+												
+												int wordLetterCount = 0;
+												String storeWordIn = "";
+												
+												while(wordLetterCount < c.length) {
+													
+													if(c[wordLetterCount] != ' ')
+														storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+													
+													wordLetterCount++;
+												}
+												
+												Control.iQS.words[num] = storeWordIn;
+//												System.out.println(Control.iQS.words[num]);
+												break;
+											}
+						
+						if(c[innerNum] == 'و') // حذف ولا 
+							if(innerNum == 0)
+								if(innerNum + 1 < c.length) 
+									if(c[innerNum + 1] == 'ل') 
+										if(innerNum + 2 < c.length) 
+											if(c[innerNum + 2] == 'ا') {
+												
+												//System.out.println(Control.iQS.words[num]);
+												c[innerNum] = c[innerNum + 1] = c[innerNum + 2] = ' ';
+												
+												int wordLetterCount = 0;
+												String storeWordIn = "";
+												
+												while(wordLetterCount < c.length) {
+													
+													if(c[wordLetterCount] != ' ')
+														storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+													
+													wordLetterCount++;
+												}
+												
+												Control.iQS.words[num] = storeWordIn;
+//												System.out.println(Control.iQS.words[num]);
+												break;
+											}
+						
+						if(c[innerNum] == 'و')  // حذف ولو
+							if(innerNum == 0)
+								if(innerNum + 1 < c.length) 
+									if(c[innerNum + 1] == 'ل') 
+										if(innerNum + 2 < c.length) 
+											if(c[innerNum + 2] == 'و') {
+												
+												//System.out.println(Control.iQS.words[num]);
+												c[innerNum] = c[innerNum + 1] = c[innerNum + 2] = ' ';
+												
+												int wordLetterCount = 0;
+												String storeWordIn = "";
+												
+												while(wordLetterCount < c.length) {
+													
+													if(c[wordLetterCount] != ' ')
+														storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+													
+													wordLetterCount++;
+												}
+												
+												Control.iQS.words[num] = storeWordIn;
+//												System.out.println(Control.iQS.words[num]);
+												break;
+											}
+						
+						if(c[innerNum] == 'و')  //  حذف وبال من بدايه الكلمه 
+							if(innerNum == 0)
+								if(innerNum + 1 < c.length) 
+									if(c[innerNum + 1] == 'ب') 
+										if(innerNum + 2 < c.length) 
+											if(c[innerNum + 2] == 'ا')
+												if(innerNum + 3 < c.length) 
+													if(c[innerNum + 3] == 'ل'){
+												
+														//System.out.println(Control.iQS.words[num]);
+														c[innerNum] = c[innerNum + 1] = c[innerNum + 2] = c[innerNum + 3] = ' ';
+														
+														int wordLetterCount = 0;
+														String storeWordIn = "";
+														
+														while(wordLetterCount < c.length) {
+															
+															if(c[wordLetterCount] != ' ')
+																storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+															
+															wordLetterCount++;
+														}
+														
+														Control.iQS.words[num] = storeWordIn;
+//														System.out.println(Control.iQS.words[num]);
+														break;
+													}
+						
+									}
+						
+						if(c[innerNum] == 'و') //  حذف حرف العطف و 
+							if(innerNum == 0) {
+								
+								//System.out.println(Control.iQS.words[num]);
+								c[innerNum] = ' ';
+								
+								int wordLetterCount = 0;
+								String storeWordIn = "";
+								
+								while(wordLetterCount < c.length) {
+									
+									if(c[wordLetterCount] != ' ')
+										storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+									
+									wordLetterCount++;
+								}
+								
+								Control.iQS.words[num] = storeWordIn;
+//								System.out.println(Control.iQS.words[num]);
+								break;
+							}
+						
+						if(c[innerNum] == 'م')  // حذف  ما الملتصقه ببدايه الكلمه
+							if(innerNum + 1 < c.length) 
+								if(c[innerNum + 1] == 'ا') 
+									if(innerNum == 0) {
+										
+										//System.out.println(Control.iQS.words[num]);
+										c[innerNum] = c[innerNum + 1] = ' ';
+										
+										int wordLetterCount = 0;
+										String storeWordIn = "";
+										
+										while(wordLetterCount < c.length) {
+											
+											if(c[wordLetterCount] != ' ')
+												storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+											
+											wordLetterCount++;
+										}
+										
+										Control.iQS.words[num] = storeWordIn;
+//										System.out.println(Control.iQS.words[num]);
+										break;
+									}
+						
+						if(c[innerNum] == 'ا')  // حذف   او الملتصقه ببدايه الكلمه
+							if(innerNum + 1 < c.length) 
+								if(c[innerNum + 1] == 'و') 
+									if(innerNum == 0) {
+										
+										//System.out.println(Control.iQS.words[num]);
+										c[innerNum] = c[innerNum + 1] = ' ';
+										
+										int wordLetterCount = 0;
+										String storeWordIn = "";
+										
+										while(wordLetterCount < c.length) {
+											
+											if(c[wordLetterCount] != ' ')
+												storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+											
+											wordLetterCount++;
+										}
+										
+										Control.iQS.words[num] = storeWordIn;
+//										System.out.println(Control.iQS.words[num]);
+										break;
+									}
+						
+						if(c[innerNum] == 'ق')  // حذف   قد الملتصقه ببدايه الكلمه
+							if(innerNum + 1 < c.length) 
+								if(c[innerNum + 1] == 'د') 
+									if(innerNum == 0) {
+										
+										//System.out.println(Control.iQS.words[num]);
+										c[innerNum] = c[innerNum + 1] = ' ';
+										
+										int wordLetterCount = 0;
+										String storeWordIn = "";
+										
+										while(wordLetterCount < c.length) {
+											
+											if(c[wordLetterCount] != ' ')
+												storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+											
+											wordLetterCount++;
+										}
+										
+										Control.iQS.words[num] = storeWordIn;
+//										System.out.println(Control.iQS.words[num]);
+										break;
+									}
+						
+						if(c[innerNum] == 'ب')  //  حذف حرف الجر ب
+									if(innerNum == 0) {
+										
+										//System.out.println(Control.iQS.words[num]);
+										c[innerNum] = ' ';
+										
+										int wordLetterCount = 0;
+										String storeWordIn = "";
+										
+										while(wordLetterCount < c.length) {
+											
+											if(c[wordLetterCount] != ' ')
+												storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+											
+											wordLetterCount++;
+										}
+										
+										Control.iQS.words[num] = storeWordIn;
+//										System.out.println(Control.iQS.words[num]);
+										break;
+									}
+						
+						}
+						
+						if(c[innerNum] == 'ف')  //  حذف حرف الجر ف
+							if(innerNum == 0) {
+								
+								//System.out.println(Control.iQS.words[num]);
+								c[innerNum] = ' ';
+								
+								int wordLetterCount = 0;
+								String storeWordIn = "";
+								
+								while(wordLetterCount < c.length) {
+									
+									if(c[wordLetterCount] != ' ')
+										storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+									
+									wordLetterCount++;
+								}
+								
+								Control.iQS.words[num] = storeWordIn;
+//								System.out.println(Control.iQS.words[num]);
+								break;
+							}
+						
+						if(c[innerNum] == 'ي')  // حذف   قد الملتصقه ببدايه الكلمه
+							if(innerNum + 1 < c.length) 
+								if(c[innerNum + 1] == 'ا') 
+									if(innerNum == 0) {
+										
+										//System.out.println(Control.iQS.words[num]);
+										c[innerNum] = c[innerNum + 1] = ' ';
+										
+										int wordLetterCount = 0;
+										String storeWordIn = "";
+										
+										while(wordLetterCount < c.length) {
+											
+											if(c[wordLetterCount] != ' ')
+												storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+											
+											wordLetterCount++;
+										}
+										
+										Control.iQS.words[num] = storeWordIn;
+//										System.out.println(Control.iQS.words[num]);
+										break;
+									}
+									
+						innerNum++;
+					}
+				}
+			}
+			
+			innerNum = 0;
+			num++;
+		}
+		
+		num = 0;
+		innerNum = 0;
+		innerNum = 0;
+		
+		while(num < Control.iQS.words.length) { // Removing  لحذف الواو والف وا وياء النسب من اخر الكلمات 
+			
+			c = Control.iQS.words[num].toCharArray();
+			
+			if(c.length >= 3) { 
+			
+				if(canNotApplyPrefixAndPostfixOnTheWords(Control.iQS.words[num]));//System.out.println(Control.iQS.words[num]);
+				
+				else {
+					
+					innerNum = c.length - 1;
+				
+					while(innerNum >= 0) {
+						
+						if(c[innerNum] == 'و') // لحذف و من اخر الكلمه
+							if(innerNum == c.length - 1) {
+								
+								//System.out.println(Control.iQS.words[num]);
+								c[innerNum] = ' ';
+								
+								int wordLetterCount = 0;
+								String storeWordIn = "";
+								
+								while(wordLetterCount < c.length) {
+									
+									if(c[wordLetterCount] != ' ')
+										storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+									
+									wordLetterCount++;
+								}
+								
+								Control.iQS.words[num] = storeWordIn;
+//								System.out.println(Control.iQS.words[num]);
+								break;
+							}
+								
+						if(c[innerNum] == 'ا') 
+							if(innerNum == c.length - 1 || innerNum < c.length - 1 && c[innerNum + 1] == ' ')
+								if(innerNum - 1 >= 0) 
+									if(c[innerNum - 1] == 'و') {
+										
+										//System.out.println(Control.iQS.words[num]);
+										c[innerNum] = c[innerNum - 1] = ' ';
+										
+										int wordLetterCount = 0;
+										String storeWordIn = "";
+										
+										while(wordLetterCount < c.length) {
+											
+											if(c[wordLetterCount] != ' ')
+												storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+											
+											wordLetterCount++;
+										}
+										
+										Control.iQS.words[num] = storeWordIn;
+//										System.out.println(Control.iQS.words[num]);
+										break;
+									}
+						
+						if(c[innerNum] == 'م')  //  لحذف كم من اخر الكلمه 
+							if(innerNum == c.length - 1 || innerNum < c.length - 1 && c[innerNum + 1] == ' ')
+								if(innerNum - 1 >= 0) 
+									if(c[innerNum - 1] == 'ك') {
+										
+										//System.out.println(Control.iQS.words[num]);
+										c[innerNum] = c[innerNum - 1] = ' ';
+										
+										int wordLetterCount = 0;
+										String storeWordIn = "";
+										
+										while(wordLetterCount < c.length) {
+											
+											if(c[wordLetterCount] != ' ')
+												storeWordIn = storeWordIn + String.valueOf(c[wordLetterCount]);
+											
+											wordLetterCount++;
+										}
+										
+										Control.iQS.words[num] = storeWordIn;
+//										System.out.println(Control.iQS.words[num]);
+										break;
+									}
+						
+									}				
+							}
+						
+						    innerNum--;
+						}
+					}
+				}
+			
+			innerNum = 0;
+			num++;
+		}
+	}
+	
+	public static void checkRepetationFromTheWords() {
+
+		int num = 0;
+		int innerNum = 0;
+		char c[];
+		
+		while(num < Control.iQS.words.length) {
+		
+			if(!canNotApplyPrefixAndPostfixOnTheWords(Control.iQS.words[num]) && Control.iQS.words[num].length() > 1) {
+				
+			    c = Control.iQS.words[num].toCharArray();
+				
+				while(innerNum < c.length) {
+					
+					if(innerNum > 0)
+						if(c[innerNum] == c[innerNum - 1]) {
+							
+//							System.out.println("String length : " + c.length + ", The String: " + String.valueOf(c) + ", The String in the System : " + Control.iQS.words[num]);
+							Control.iQS.words[num] = updateTheWordAfterRemovingRepeatedLetter(Control.iQS.words[num], innerNum);
+							 c = Control.iQS.words[num].toCharArray();
+							if(c.length > 1)
+								innerNum = 0;
+						}
+					
+					innerNum++;
+				}
+			}
+			
+			innerNum = 0;
+			num++;
+		}
+	}
+	
+	public static String updateTheWordAfterRemovingRepeatedLetter(String s, int n) {
+		
+		int num = 0;
+		char c[] = s.toCharArray();
+		char storeWordIn[]  = new char[c.length - 1];
+		int newStringCounter = 0;
+		
+//		System.out.println("Orignal String  size: " + s.length() + ", New string size: " + storeWordIn.length);
+		while(num < s.length()) {
+			
+			if(num != n) 
+				storeWordIn[newStringCounter++] = c[num];
+			
+			num++;
+		}
+		
+//		System.out.println("Orignal String : " + s + ", Delated index : " + n + ", New String : " + String.valueOf(storeWordIn));
+		return String.valueOf(storeWordIn);
+	}
+
+	public static void stopWordRemoval() {
+		
+		int num = 0;
+	
+		int stopWordNum = 0;
+		
+		while(num < Control.iQS.words.length) {
+			
+			while(stopWordNum < Control.stopWords.length) {
+				
+				if(Control.stopWords[stopWordNum].equals(Control.iQS.words[num]) || Control.iQS.words[num].length() <= 2 && !canNotApplyPrefixAndPostfixOnTheWords(Control.iQS.words[num])) {
+					
+					//System.out.println(num + ":" + Control.iQS.words[num]);
+					Control.iQS.words[num] = null;
+					break;
+				}
+					
+				stopWordNum++;
+			}
+					
+			stopWordNum = 0;
+			num++;
+		}
+	}
+	
+	public static void cleanEmptyWordsFromQuestionWordsArray() { //There still empty words
+		
+		int num = 0;
+		int nullStringCounter  = 0;
+		int stringCounter = 0;
+		String s[] = null;
+		
+		while(num < Control.iQS.words.length) {
+			
+			if(Control.iQS.words[num] == null)
+				nullStringCounter++;
+
+			num++;
+		}
+		
+		num = 0;
+		s = new String[Control.iQS.words.length - nullStringCounter];
+		
+		while(num < Control.iQS.words.length) {
+			
+			if(Control.iQS.words[num] != null) {
+				
+				s[stringCounter] = Control.iQS.words[num];
+				stringCounter++;
+			}
+				
+			num++;
+		}
+		
+//		System.out.println("********** here" + Control.iQS.words.length);
+		Control.iQS.words = s;
+//		System.out.println("********** here" + s.length);
+	}
+	
+	public static void printRepetitionArray(){
+		
+		int num = 0;
+		
+		while(num < Control.indexArrayForRemovingRepetation.length) {
+			
+			System.out.print(Control.indexArrayForRemovingRepetation[num] + ", ");
+			num++;
+		}
+	}
+
+	public static boolean canNotApplyPrefixAndPostfixOnTheWords(String s) {
+		
+		int num = 0;
+		
+		while(num < Control.canNotApplayStemmingOnWord.length) {
+			
+			if(Control.canNotApplayStemmingOnWord[num].equals(s))
+				return true;
+			
+			num++;
+		}
+		
+		return false;
+	}
+	
+	public static boolean isIndexInRepititionArray(int n) {
+		
+		int num = 0;
+		
+		while(num < Control.indexArrayForRemovingRepetation.length) {
+			
+			if(Control.indexArrayForRemovingRepetation[num] == n)
+				return true;
+			
+			num++;
+		}
+		
+		return false;
+	}
 }
